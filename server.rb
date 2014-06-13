@@ -6,19 +6,20 @@ require_relative "lib/evecentral"
 
 include EveCentral
 
+set :bind, '0.0.0.0'
+set :port, '4567'
+
 before do
+  
+end
+
+get '/api/hubs/:system' do
   content_type :txt
+  @jumps = fetch_jumps(params[:system].to_s).to_json
 end
 
 get '/hubs/:system' do
-begin
-  system = params[:system].to_s.titleize
-  res = EveCentral::hub_distance(system)
-  res.to_s
-rescue JSON::ParserError
-  return "Please enter a valid system"
-rescue SocketError
-  return "Unable to Connect to EveCentral"
+  content_type :html
+  @jumps = fetch_jumps(params[:system].to_s)
+  erb :index
 end
-end
-
